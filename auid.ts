@@ -26,7 +26,7 @@ class Auid {
         if (typeof process !== 'undefined' && process.hrtime) 
             return process.hrtime()[1]!.toString(36).toUpperCase().padStart(6, '0');
         // 以微秒精度取偏移值
-        const µs: number = (performance.now() * 1_000 | 0) % 1_000_000;
+        const µs: number = (performance.now() | 0) % 1_000;
         // 简单随机 浏览器环境不用考虑随机安全性
         // 用于快速补足不满足 999_999_999 空间的部分
         const rn: number = (Math.random() * 1_000_000_000 - µs | 0);
@@ -44,7 +44,7 @@ class Auid {
             // 拼接随机数 36进制 随机空间 1296^8 约 2^83 
             Auid.#fbArr8[i] = (Auid.#buffer8[i]! + currOffset).toString(36).toUpperCase().padStart(2, '0');
         }
-        // Auid 随机空间 1296^8 约 2^83 32位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 16位随机数)
+        // Auid 随机空间 1275^8 约 2^82 32位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 16位随机数)
         return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr8.join('');
     }
 
@@ -57,7 +57,7 @@ class Auid {
             const currOffset: number = Auid.#offset10[oIdx++]! + Auid.#offset10[oIdx++]! + Auid.#offset10[oIdx++]! + Auid.#offset10[oIdx++]!;
             Auid.#fbArr10[i] = (Auid.#buffer10[i]! + currOffset).toString(36).toUpperCase().padStart(2, '0');
         }
-        // Auid 随机空间 1296^10 约 2^103 36位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 20位随机数)
+        // Auid 随机空间 1275^10 约 2^103 36位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 20位随机数)
         return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr10.join('');
     }
 };
