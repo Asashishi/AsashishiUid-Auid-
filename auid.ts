@@ -44,7 +44,7 @@ class Auid {
             // 拼接随机数 36进制 随机空间 1296^8 约 2^83 
             Auid.#fbArr8[i] = (Auid.#buffer8[i]! + currOffset).toString(36).toUpperCase().padStart(2, '0');
         }
-        // Auid 随机空间 1296^8 约 2^83 32位字符 (9位时间戳(ms) + 6位时间偏移(ns) + 11位随机数)
+        // Auid 随机空间 1296^8 约 2^83 32位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 16位随机数)
         return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr8.join('');
     }
 
@@ -57,7 +57,7 @@ class Auid {
             const currOffset: number = Auid.#offset10[oIdx++]! + Auid.#offset10[oIdx++]! + Auid.#offset10[oIdx++]! + Auid.#offset10[oIdx++]!;
             Auid.#fbArr10[i] = (Auid.#buffer10[i]! + currOffset).toString(36).toUpperCase().padStart(2, '0');
         }
-        // Auid 随机空间 1296^10 约 2^103 36位字符 (9位时间戳(ms) + 6位时间偏移(ns) + 15位随机数)
+        // Auid 随机空间 1296^10 约 2^103 36位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 20位随机数)
         return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr10.join('');
     }
 };
