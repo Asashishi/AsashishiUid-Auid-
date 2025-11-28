@@ -1,23 +1,17 @@
-import { getRandomValues } from 'crypto';
-
 class Auid {
-
     // 基础随机空间
-    static #length8: number = 8;
-    // 随机空间偏移
-    static #oLength8: number = 32;
-
+    static #length8: number = 16;
     // 数组化存储 避免频繁 gc
     static #fbArr8: string[] = new Array(Auid.#length8);
     static #buffer8: Uint8Array = new Uint8Array(Auid.#length8);
-    static #offset8: Uint8Array = new Uint8Array(Auid.#oLength8);
 
-    static #length10: number = 10;
-    static #oLength10: number = 40;
-
+    static #length10: number = 32;
     static #fbArr10: string[] = new Array(Auid.#length10);
     static #buffer10: Uint8Array = new Uint8Array(Auid.#length10);
-    static #offset10: Uint8Array = new Uint8Array(Auid.#oLength10);
+
+    static #bLength: number = 3;
+    static #fbArrB: string[] = new Array(Auid.#bLength);
+    static #bufferB: Uint8Array = new Uint8Array(Auid.#bLength);
 
     // 兼容浏览器 跨语言可以考虑 ns % 1e9 来获取偏移
     static #gTimeOffsetB36(): string {
@@ -26,39 +20,33 @@ class Auid {
         if (typeof process !== 'undefined' && process.hrtime) 
             return process.hrtime()[1]!.toString(36).toUpperCase().padStart(6, '0');
         // 以微秒精度取偏移值
+        crypto.getRandomValues(Auid.#bufferB);
         const µs: number = (performance.now() * 1000 | 0) % 1_000;
-        // 简单随机 浏览器环境不用考虑随机安全性
-        // 用于快速补足不满足 999_999_999 空间的部分
-        const rn: number = (Math.random() * (1_000_000_000 - µs)) | 0;
-        return (µs + rn).toString(36).toUpperCase().padStart(6, '0');
+        const µsB36: string = µs.toString(36).toUpperCase().padStart(3, '0');
+        
+        for (let i: number = 0; i < Auid.#bLength; i++)
+            // 用于快速补足随机空间后三位
+            Auid.#fbArrB[i] = (Math.min(Auid.#bufferB[i]!, 251) % 36).toString(36).toUpperCase();
+        return µsB36 + Auid.#fbArrB.join('');
     }
 
-    public static gen8(): string {
-        getRandomValues(Auid.#buffer8);
-        getRandomValues(Auid.#offset8);
+    public static gen16(): string {
+        crypto.getRandomValues(Auid.#buffer8);
         // ms 时间戳 36 进制
         const msB36: string = Date.now().toString(36).toUpperCase().padStart(9, '0');
-        let oIdx: number = 0;
-        for (let i: number = 0; i < Auid.#length8; i++) {
-            // 可能造成分布不均匀 但影响较小 能有效扩大随机空间
-            const currOffset: number = Auid.#offset8[oIdx++]! + Auid.#offset8[oIdx++]! + Auid.#offset8[oIdx++]! + Auid.#offset8[oIdx++]!;
-            // 拼接随机数 36进制 随机空间
-            Auid.#fbArr8[i] = (Auid.#buffer8[i]! + currOffset).toString(36).toUpperCase().padStart(2, '0');
-        }
-        // Auid 随机空间 1276^8 约 2^82 32位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 16位随机数)
+        for (let i: number = 0; i < Auid.#length8; i++)
+            // 会损失 半个字节的随机熵 但是较为均匀
+            Auid.#fbArr8[i] = (Math.min(Auid.#buffer8[i]!, 251) % 36).toString(36).toUpperCase();
+        // Auid 随机空间 36^16 约 2^82 32位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 16个36进制随机数)
         return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr8.join('');
     }
 
-    public static gen10(): string {
-        getRandomValues(Auid.#buffer10);
-        getRandomValues(Auid.#offset10);
+    public static gen32(): string {
+        crypto.getRandomValues(Auid.#buffer10);
         const msB36: string = Date.now().toString(36).toUpperCase().padStart(9, '0');
-        let oIdx: number = 0;
-        for (let i: number = 0; i < Auid.#length10; i++) {
-            const currOffset: number = Auid.#offset10[oIdx++]! + Auid.#offset10[oIdx++]! + Auid.#offset10[oIdx++]! + Auid.#offset10[oIdx++]!;
-            Auid.#fbArr10[i] = (Auid.#buffer10[i]! + currOffset).toString(36).toUpperCase().padStart(2, '0');
-        }
-        // Auid 随机空间 1276^10 约 2^103 36位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 20位随机数)
+        for (let i: number = 0; i < Auid.#length10; i++)
+            Auid.#fbArr10[i] = (Math.min(Auid.#buffer10[i]!, 251) % 36).toString(36).toUpperCase();
+        // Auid 随机空间 36^32 约 2^165 48位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 32个36进制随机数)
         return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr10.join('');
     }
 };
