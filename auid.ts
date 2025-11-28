@@ -41,7 +41,7 @@ class Auid {
         let oIdx: number = 0;
         for (let i: number = 0; i < Auid.#length8; i++) {
             const currOffset: number = Auid.#offset8[oIdx++]! + Auid.#offset8[oIdx++]! + Auid.#offset8[oIdx++]! + Auid.#offset8[oIdx++]!;
-            // 拼接随机数 36进制 随机空间 1296^8 约 2^83 
+            // 拼接随机数 36进制 随机空间 1275^8 约 2^83 
             Auid.#fbArr8[i] = (Auid.#buffer8[i]! + currOffset).toString(36).toUpperCase().padStart(2, '0');
         }
         // Auid 随机空间 1275^8 约 2^82 32位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 16位随机数)
