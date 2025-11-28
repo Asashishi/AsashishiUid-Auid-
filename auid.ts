@@ -29,7 +29,7 @@ class Auid {
         const µs: number = (performance.now() | 0) % 1_000;
         // 简单随机 浏览器环境不用考虑随机安全性
         // 用于快速补足不满足 999_999_999 空间的部分
-        const rn: number = (Math.random() * 1_000_000_000 - µs | 0);
+        const rn: number = (Math.random() * (1_000_000_000 - µs)) | 0;
         return (µs + rn).toString(36).toUpperCase().padStart(6, '0');
     }
 
