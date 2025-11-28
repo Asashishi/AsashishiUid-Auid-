@@ -26,7 +26,7 @@ class Auid {
         if (typeof process !== 'undefined' && process.hrtime) 
             return process.hrtime()[1]!.toString(36).toUpperCase().padStart(6, '0');
         // 以微秒精度取偏移值
-        const µs: number = (performance.now() | 0) % 1_000;
+        const µs: number = ((performance.now() * 1000) | 0) % 1_000;
         // 简单随机 浏览器环境不用考虑随机安全性
         // 用于快速补足不满足 999_999_999 空间的部分
         const rn: number = (Math.random() * (1_000_000_000 - µs)) | 0;
