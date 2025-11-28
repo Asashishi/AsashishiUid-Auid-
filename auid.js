@@ -1,15 +1,15 @@
 // @bun
 // auid.ts
 class Auid {
-  static #length8 = 16;
-  static #fbArr8 = new Array(Auid.#length8);
-  static #buffer8 = new Uint8Array(Auid.#length8);
-  static #length10 = 32;
-  static #fbArr10 = new Array(Auid.#length10);
-  static #buffer10 = new Uint8Array(Auid.#length10);
   static #bLength = 3;
   static #fbArrB = new Array(Auid.#bLength);
   static #bufferB = new Uint8Array(Auid.#bLength);
+  static #length16 = 16;
+  static #fbArr16 = new Array(Auid.#length16);
+  static #buffer16 = new Uint8Array(Auid.#length16);
+  static #length32 = 32;
+  static #fbArr32 = new Array(Auid.#length32);
+  static #buffer32 = new Uint8Array(Auid.#length32);
   static #gTimeOffsetB36() {
     if (typeof process !== "undefined" && process.hrtime)
       return process.hrtime()[1].toString(36).toUpperCase().padStart(6, "0");
@@ -21,18 +21,18 @@ class Auid {
     return \u{b5}sB36 + Auid.#fbArrB.join("");
   }
   static gen16() {
-    crypto.getRandomValues(Auid.#buffer8);
+    crypto.getRandomValues(Auid.#buffer16);
     const msB36 = Date.now().toString(36).toUpperCase().padStart(9, "0");
-    for (let i = 0;i < Auid.#length8; i++)
-      Auid.#fbArr8[i] = (Math.min(Auid.#buffer8[i], 251) % 36).toString(36).toUpperCase();
-    return msB36 + "-" + Auid.#gTimeOffsetB36() + Auid.#fbArr8.join("");
+    for (let i = 0;i < Auid.#length16; i++)
+      Auid.#fbArr16[i] = (Math.min(Auid.#buffer16[i], 251) % 36).toString(36).toUpperCase();
+    return msB36 + "-" + Auid.#gTimeOffsetB36() + Auid.#fbArr16.join("");
   }
   static gen32() {
-    crypto.getRandomValues(Auid.#buffer10);
+    crypto.getRandomValues(Auid.#buffer32);
     const msB36 = Date.now().toString(36).toUpperCase().padStart(9, "0");
-    for (let i = 0;i < Auid.#length10; i++)
-      Auid.#fbArr10[i] = (Math.min(Auid.#buffer10[i], 251) % 36).toString(36).toUpperCase();
-    return msB36 + "-" + Auid.#gTimeOffsetB36() + Auid.#fbArr10.join("");
+    for (let i = 0;i < Auid.#length32; i++)
+      Auid.#fbArr32[i] = (Math.min(Auid.#buffer32[i], 251) % 36).toString(36).toUpperCase();
+    return msB36 + "-" + Auid.#gTimeOffsetB36() + Auid.#fbArr32.join("");
   }
 }
 var auid_default = Auid;
