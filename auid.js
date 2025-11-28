@@ -1,45 +1,37 @@
 // @bun
 // auid.ts
-import { getRandomValues } from "crypto";
-
 class Auid {
-  static #length8 = 8;
-  static #oLength8 = 32;
+  static #length8 = 16;
   static #fbArr8 = new Array(Auid.#length8);
   static #buffer8 = new Uint8Array(Auid.#length8);
-  static #offset8 = new Uint8Array(Auid.#oLength8);
-  static #length10 = 10;
-  static #oLength10 = 40;
+  static #length10 = 32;
   static #fbArr10 = new Array(Auid.#length10);
   static #buffer10 = new Uint8Array(Auid.#length10);
-  static #offset10 = new Uint8Array(Auid.#oLength10);
+  static #bLength = 3;
+  static #fbArrB = new Array(Auid.#bLength);
+  static #bufferB = new Uint8Array(Auid.#bLength);
   static #gTimeOffsetB36() {
     if (typeof process !== "undefined" && process.hrtime)
       return process.hrtime()[1].toString(36).toUpperCase().padStart(6, "0");
+    crypto.getRandomValues(Auid.#bufferB);
     const \u{b5}s = (performance.now() * 1000 | 0) % 1000;
-    const rn = Math.random() * (1e9 - \u{b5}s) | 0;
-    return (\u{b5}s + rn).toString(36).toUpperCase().padStart(6, "0");
+    const \u{b5}sB36 = \u{b5}s.toString(36).toUpperCase().padStart(3, "0");
+    for (let i = 0;i < Auid.#bLength; i++)
+      Auid.#fbArrB[i] = (Math.min(Auid.#bufferB[i], 251) % 36).toString(36).toUpperCase();
+    return \u{b5}sB36 + Auid.#fbArrB.join("");
   }
-  static gen8() {
-    getRandomValues(Auid.#buffer8);
-    getRandomValues(Auid.#offset8);
+  static gen16() {
+    crypto.getRandomValues(Auid.#buffer8);
     const msB36 = Date.now().toString(36).toUpperCase().padStart(9, "0");
-    let oIdx = 0;
-    for (let i = 0;i < Auid.#length8; i++) {
-      const currOffset = Auid.#offset8[oIdx++] + Auid.#offset8[oIdx++] + Auid.#offset8[oIdx++] + Auid.#offset8[oIdx++];
-      Auid.#fbArr8[i] = (Auid.#buffer8[i] + currOffset).toString(36).toUpperCase().padStart(2, "0");
-    }
+    for (let i = 0;i < Auid.#length8; i++)
+      Auid.#fbArr8[i] = (Math.min(Auid.#buffer8[i], 251) % 36).toString(36).toUpperCase();
     return msB36 + "-" + Auid.#gTimeOffsetB36() + Auid.#fbArr8.join("");
   }
-  static gen10() {
-    getRandomValues(Auid.#buffer10);
-    getRandomValues(Auid.#offset10);
+  static gen32() {
+    crypto.getRandomValues(Auid.#buffer10);
     const msB36 = Date.now().toString(36).toUpperCase().padStart(9, "0");
-    let oIdx = 0;
-    for (let i = 0;i < Auid.#length10; i++) {
-      const currOffset = Auid.#offset10[oIdx++] + Auid.#offset10[oIdx++] + Auid.#offset10[oIdx++] + Auid.#offset10[oIdx++];
-      Auid.#fbArr10[i] = (Auid.#buffer10[i] + currOffset).toString(36).toUpperCase().padStart(2, "0");
-    }
+    for (let i = 0;i < Auid.#length10; i++)
+      Auid.#fbArr10[i] = (Math.min(Auid.#buffer10[i], 251) % 36).toString(36).toUpperCase();
     return msB36 + "-" + Auid.#gTimeOffsetB36() + Auid.#fbArr10.join("");
   }
 }
