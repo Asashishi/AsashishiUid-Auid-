@@ -1,17 +1,18 @@
 class Auid {
+
     // 基础随机空间
-    static #length8: number = 16;
-    // 数组化存储 避免频繁 gc
-    static #fbArr8: string[] = new Array(Auid.#length8);
-    static #buffer8: Uint8Array = new Uint8Array(Auid.#length8);
-
-    static #length10: number = 32;
-    static #fbArr10: string[] = new Array(Auid.#length10);
-    static #buffer10: Uint8Array = new Uint8Array(Auid.#length10);
-
     static #bLength: number = 3;
+    // 数组化存储 避免频繁 gc
     static #fbArrB: string[] = new Array(Auid.#bLength);
     static #bufferB: Uint8Array = new Uint8Array(Auid.#bLength);
+
+    static #length16: number = 16;
+    static #fbArr16: string[] = new Array(Auid.#length16);
+    static #buffer16: Uint8Array = new Uint8Array(Auid.#length16);
+
+    static #length32: number = 32;
+    static #fbArr32: string[] = new Array(Auid.#length32);
+    static #buffer32: Uint8Array = new Uint8Array(Auid.#length32);
 
     // 兼容浏览器 跨语言可以考虑 ns % 1e9 来获取偏移
     static #gTimeOffsetB36(): string {
@@ -31,23 +32,23 @@ class Auid {
     }
 
     public static gen16(): string {
-        crypto.getRandomValues(Auid.#buffer8);
+        crypto.getRandomValues(Auid.#buffer16);
         // ms 时间戳 36 进制
         const msB36: string = Date.now().toString(36).toUpperCase().padStart(9, '0');
-        for (let i: number = 0; i < Auid.#length8; i++)
+        for (let i: number = 0; i < Auid.#length16; i++)
             // 会损失 半个字节的随机熵 但是较为均匀
-            Auid.#fbArr8[i] = (Math.min(Auid.#buffer8[i]!, 251) % 36).toString(36).toUpperCase();
+            Auid.#fbArr16[i] = (Math.min(Auid.#buffer16[i]!, 251) % 36).toString(36).toUpperCase();
         // Auid 随机空间 36^16 约 2^82 32位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 16个36进制随机数)
-        return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr8.join('');
+        return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr16.join('');
     }
 
     public static gen32(): string {
-        crypto.getRandomValues(Auid.#buffer10);
+        crypto.getRandomValues(Auid.#buffer32);
         const msB36: string = Date.now().toString(36).toUpperCase().padStart(9, '0');
-        for (let i: number = 0; i < Auid.#length10; i++)
-            Auid.#fbArr10[i] = (Math.min(Auid.#buffer10[i]!, 251) % 36).toString(36).toUpperCase();
+        for (let i: number = 0; i < Auid.#length32; i++)
+            Auid.#fbArr32[i] = (Math.min(Auid.#buffer32[i]!, 251) % 36).toString(36).toUpperCase();
         // Auid 随机空间 36^32 约 2^165 48位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 32个36进制随机数)
-        return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr10.join('');
+        return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr32.join('');
     }
 };
 
