@@ -17,7 +17,7 @@ class Auid {
     if (typeof process !== "undefined" && process.hrtime)
       return process.hrtime()[1].toString(36).toUpperCase().padStart(6, "0");
     const \u{b5}s = (performance.now() | 0) % 1000;
-    const rn = Math.random() * 1e9 - \u{b5}s | 0;
+    const rn = (Math.random() * (1e9 - \u{b5}s)) | 0;
     return (\u{b5}s + rn).toString(36).toUpperCase().padStart(6, "0");
   }
   static gen8() {
