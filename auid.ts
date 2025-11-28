@@ -24,10 +24,9 @@ class Auid {
         crypto.getRandomValues(Auid.#bufferB);
         const µs: number = (performance.now() * 1000 | 0) % 1_000;
         const µsB36: string = µs.toString(36).toUpperCase().padStart(3, '0');
-        
         for (let i: number = 0; i < Auid.#bLength; i++)
             // 用于快速补足随机空间后三位
-            Auid.#fbArrB[i] = (Math.min(Auid.#bufferB[i]!, 251) % 36).toString(36).toUpperCase();
+            Auid.#fbArrB[i] = (Auid.#bufferB[i]! % 36).toString(36).toUpperCase();
         return µsB36 + Auid.#fbArrB.join('');
     }
 
@@ -36,8 +35,8 @@ class Auid {
         // ms 时间戳 36 进制
         const msB36: string = Date.now().toString(36).toUpperCase().padStart(9, '0');
         for (let i: number = 0; i < Auid.#length16; i++)
-            // 会损失 半个字节的随机熵 但是较为均匀
-            Auid.#fbArr16[i] = (Math.min(Auid.#buffer16[i]!, 251) % 36).toString(36).toUpperCase();
+            // 会损失半个字节的随机熵 但是较为均匀
+            Auid.#fbArr16[i] = (Auid.#buffer16[i]! % 36).toString(36).toUpperCase();
         // Auid 随机空间 36^16 约 2^82 32位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 16个36进制随机数)
         return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr16.join('');
     }
@@ -46,7 +45,7 @@ class Auid {
         crypto.getRandomValues(Auid.#buffer32);
         const msB36: string = Date.now().toString(36).toUpperCase().padStart(9, '0');
         for (let i: number = 0; i < Auid.#length32; i++)
-            Auid.#fbArr32[i] = (Math.min(Auid.#buffer32[i]!, 251) % 36).toString(36).toUpperCase();
+            Auid.#fbArr32[i] = (Auid.#buffer32[i]! % 36).toString(36).toUpperCase();
         // Auid 随机空间 36^32 约 2^165 48位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 32个36进制随机数)
         return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr32.join('');
     }
