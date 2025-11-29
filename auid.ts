@@ -35,7 +35,7 @@ class Auid {
         // ms 时间戳 36 进制
         const msB36: string = Date.now().toString(36).toUpperCase().padStart(9, '0');
         for (let i: number = 0; i < Auid.#length16; i++)
-            // 会损失半个字节的随机熵 但是较为均匀
+            // 会轻微损失随机均匀性 但随机空间大幅提升
             Auid.#fbArr16[i] = (Auid.#buffer16[i]! % 36).toString(36).toUpperCase();
         // Auid 随机空间 36^16 约 2^82 32位字符 (9位时间戳(ms) + - + 6位时间偏移(ns) + 16个36进制随机数)
         return msB36 + '-' + Auid.#gTimeOffsetB36() + Auid.#fbArr16.join('');
